@@ -6,7 +6,7 @@
 # COMMAND ----------
 
 def mount_adls(container_name,storage_account_name):
-    #Get secrets from Key Vault
+    #Get secrets from Key Vault.
     client_id = dbutils.secrets.get(scope = 'formula1-scope', key='formula1dl-service-principal-client-id')
     tenant_id = dbutils.secrets.get(scope = 'formula1-scope', key='formula1dl-service-principal-tenant-id')
     client_secret = dbutils.secrets.get(scope = 'formula1-scope', key='formula1dl-service-principal-client-secret')
