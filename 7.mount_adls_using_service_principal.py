@@ -28,13 +28,13 @@ configs = {"fs.azure.account.auth.type": "OAuth",
 #3. Call file system utility mount to mount the storage
 # Optionally, you can add <directory-name> to the source URI of your mount point.
 dbutils.fs.mount(
-  source = "abfss://demo@formula1datacoursedl.dfs.core.windows.net/",
-  mount_point = "/mnt/formula1datacoursedl/demo",
+  source = "abfss://processed@formula1datacoursedl.dfs.core.windows.net/",
+  mount_point = "/mnt/formula1datacoursedl/processed",
   extra_configs = configs)
 
 # COMMAND ----------
 
-display(dbutils.fs.ls("/mnt/formula1datacoursedl/demo"))
+display(dbutils.fs.ls("/mnt/formula1datacoursedl"))
 
 # COMMAND ----------
 
