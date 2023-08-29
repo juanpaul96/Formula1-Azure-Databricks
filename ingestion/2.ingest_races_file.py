@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CVS file using the spark dataframe reader
 
@@ -18,7 +26,7 @@ display(dbutils.fs.mounts())
 
 # COMMAND ----------
 
-circuits_df = spark.read.option("header",True).option("inferSchema",True).csv("dbfs:/mnt/formula1datacoursedl/raw/races.csv")
+circuits_df = spark.read.option("header",True).option("inferSchema",True).csv(f"{raw_folder_path}/races.csv")
 display(circuits_df)
 
 # COMMAND ----------
@@ -40,7 +48,7 @@ StructField("url", StringType(), True)
 
 # COMMAND ----------
 
-races_df = spark.read.option("header",True).schema(races_schema).csv("/mnt/formula1datacoursedl/raw/races.csv")
+races_df = spark.read.option("header",True).schema(races_schema).csv(f"{raw_folder_path}/races.csv")
 
 # COMMAND ----------
 
@@ -86,8 +94,11 @@ from pyspark.sql.functions import current_timestamp, to_timestamp, concat, lit, 
 
 # COMMAND ----------
 
-races_final_df = races_rename_df.withColumn('race_timestamp',to_timestamp(concat(col('date'),lit(' '),col('time')),'yyyy-MM-dd HH:mm:ss')) \
-    .withColumn("ingestion_date",current_timestamp())
+races_final_df = races_rename_df.withColumn('race_timestamp',to_timestamp(concat(col('date'),lit(' '),col('time')),'yyyy-MM-dd HH:mm:ss'))
+
+# COMMAND ----------
+
+races_final_df = add_ingestion_date(races_rename_df)
 
 # COMMAND ----------
 
@@ -100,11 +111,8 @@ display(races_final_df)
 
 # COMMAND ----------
 
-races_final_df.write.mode("overwrite").partitionBy("race_year").parquet("/mnt/formula1datacoursedl/processed/races")
-
-# COMMAND ----------
-
-display(spark.read.parquet('/mnt/formula1datacoursedl/processed/races'))
+races_final_df.write.mode("overwrite").partitionBy("race_year").parquet(f"{processed_folder_path}/races")
+display(spark.read.parquet(f"{processed_folder_path}/races"))
 
 # COMMAND ----------
 

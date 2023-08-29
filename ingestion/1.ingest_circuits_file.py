@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CVS file using the spark dataframe reader
 
@@ -20,7 +28,7 @@ display(dbutils.fs.mounts())
 
 #Header: it's telling to the df that the first row are the headers
 #InferSchema: infers the types of data of the df -Use only in very small data and test env
-circuits_df = spark.read.option("header",True).option("inferSchema",True).csv("dbfs:/mnt/formula1datacoursedl/raw/circuits.csv")
+circuits_df = spark.read.option("header",True).option("inferSchema",True).csv(f"{raw_folder_path}circuits.csv")
 
 # COMMAND ----------
 
@@ -52,7 +60,7 @@ StructField("url", StringType(), True)
 
 # COMMAND ----------
 
-circuits_df = spark.read.option("header",True).schema(circuits_schema).csv("/mnt/formula1datacoursedl/raw/circuits.csv")
+circuits_df = spark.read.option("header",True).schema(circuits_schema).csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -96,11 +104,7 @@ display(circuits_rename_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
-circuits_final_df = circuits_rename_df.withColumn("ingestion_date",current_timestamp())
+circuits_final_df = add_ingestion_date(circuits_rename_df)
 
 # COMMAND ----------
 
@@ -113,8 +117,5 @@ display(circuits_final_df)
 
 # COMMAND ----------
 
-circuits_final_df.write.parquet("/mnt/formula1datacoursedl/processed/circuits")
-
-# COMMAND ----------
-
-display(spark.read.parquet('/mnt/formula1datacoursedl/processed/circuits'))
+circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+display(spark.read.parquet(f'{processed_folder_path}/circuits'))

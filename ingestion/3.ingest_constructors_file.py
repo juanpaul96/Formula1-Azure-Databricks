@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1. Read the JSON file using the spark dataframe reader
 
@@ -25,7 +33,7 @@ StructField("url", StringType(), True)
 
 constructors_df = spark.read \
 .schema(constructors_schema) \
-.json("/mnt/formula1datacoursedl/raw/constructors.json")
+.json(f"{raw_folder_path}/constructors.json")
 display(constructors_df) 
 
 # COMMAND ----------
@@ -39,15 +47,14 @@ constructor_dropped_df = constructors_df.drop("url")
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
+constructor_final_df = constructor_dropped_df \
+    .withColumnRenamed("constructorId","constructor_id")\
+    .withColumnRenamed("constructorRef", "constructor_ref")
+display(constructor_final_df) 
 
 # COMMAND ----------
 
-constructor_final_df = constructor_dropped_df \
-    .withColumnRenamed("constructorId","constructor_id")\
-    .withColumnRenamed("constructorRef", "constructor_ref")\
-    .withColumn("ingestion_date",current_timestamp())
-display(constructor_final_df) 
+constructor_final_df = add_ingestion_date(constructor_dropped_df)
 
 # COMMAND ----------
 
@@ -56,5 +63,5 @@ display(constructor_final_df)
 
 # COMMAND ----------
 
-constructor_final_df.write.mode("overwrite").parquet("/mnt/formula1datacoursedl/processed/constructors")
-display(spark.read.parquet('/mnt/formula1datacoursedl/processed/constructors'))
+constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
+display(spark.read.parquet(f"{processed_folder_path}/constructors"))

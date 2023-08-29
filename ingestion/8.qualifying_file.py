@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1. Read the JSON files using the spark dataframe reader API
 
@@ -30,7 +38,7 @@ StructField("q3", StringType(), True)
 qualifying_df = spark.read \
 .schema(qualifying_schema) \
 .option("multiline",True) \
-.json("/mnt/formula1datacoursedl/raw/qualifying")
+.json(f"{raw_folder_path}/qualifying")
 display(qualifying_df) 
 
 # COMMAND ----------
@@ -40,19 +48,18 @@ display(qualifying_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
 final_qualifying_df = qualifying_df \
     .withColumnRenamed("qualifyId","qualify_id")\
     .withColumnRenamed("driverId","driver_id")\
     .withColumnRenamed("raceId","race_id")\
-    .withColumnRenamed("constructorId","constructor_id")\
-    .withColumn("ingestion_date",current_timestamp())
+    .withColumnRenamed("constructorId","constructor_id")
+
+# COMMAND ----------
+
+final_qualifying_df = add_ingestion_date(qualifying_df)
 display(final_qualifying_df) 
 
 # COMMAND ----------
 
-final_qualifying_df.write.mode("overwrite").parquet("/mnt/formula1datacoursedl/processed/qualifying")
-display(spark.read.parquet("/mnt/formula1datacoursedl/processed/qualifying"))
+final_qualifying_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")
+display(spark.read.parquet(f"{processed_folder_path}/qualifying"))

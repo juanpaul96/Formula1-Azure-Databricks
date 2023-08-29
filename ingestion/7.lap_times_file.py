@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1. Read the CSV file using the spark dataframe reader API
 
@@ -26,7 +34,7 @@ StructField("milliseconds", IntegerType(), True)
 
 lap_times_df = spark.read \
 .schema(lap_times_schema) \
-.csv("/mnt/formula1datacoursedl/raw/lap_times")
+.csv(f"{raw_folder_path}/lap_times")
 display(lap_times_df) 
 
 # COMMAND ----------
@@ -40,17 +48,16 @@ lap_times_df.count()
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
+final_lap_times_df = lap_times_df \
+    .withColumnRenamed("driverId","driver_id")\
+    .withColumnRenamed("raceId","race_id")
 
 # COMMAND ----------
 
-final_lap_times_df = lap_times_df \
-    .withColumnRenamed("driverId","driver_id")\
-    .withColumnRenamed("raceId","race_id")\
-    .withColumn("ingestion_date",current_timestamp())
+final_lap_times_df = add_ingestion_date(lap_times_df)
 display(final_lap_times_df) 
 
 # COMMAND ----------
 
-final_lap_times_df.write.mode("overwrite").parquet("/mnt/formula1datacoursedl/processed/lap_times")
-display(spark.read.parquet("/mnt/formula1datacoursedl/processed/lap_times"))
+final_lap_times_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")
+display(spark.read.parquet(f"{processed_folder_path}/lap_times"))

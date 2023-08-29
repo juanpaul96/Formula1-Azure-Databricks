@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1. Read the JSON file using the spark dataframe reader
 
@@ -35,7 +43,7 @@ StructField("url", StringType(), True)
 
 drivers_df = spark.read \
 .schema(drivers_schema) \
-.json("/mnt/formula1datacoursedl/raw/drivers.json")
+.json(f"{raw_folder_path}drivers.json")
 display(drivers_df) 
 
 # COMMAND ----------
@@ -49,18 +57,21 @@ drivers_dropped_df = drivers_df.drop("url")
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp, concat, lit, col
+from pyspark.sql.functions import concat, lit, col
 
 # COMMAND ----------
 
 drivers_with_columns_df = drivers_dropped_df \
     .withColumnRenamed("driverId","driver_id")\
     .withColumnRenamed("driverRef", "driver_ref")\
-    .withColumn("ingestion_date",current_timestamp())\
     .withColumn("name", concat(col("name.forename"),lit(" "),col("name.surname")))
 display(drivers_with_columns_df) 
 
 # COMMAND ----------
 
-drivers_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1datacoursedl/processed/drivers")
-display(spark.read.parquet("/mnt/formula1datacoursedl/processed/drivers"))
+drivers_with_columns_df = add_ingestion_date(drivers_dropped_df)
+
+# COMMAND ----------
+
+drivers_with_columns_df.write.mode("overwrite").parquet(f"{processed_folder_path}/drivers")
+display(spark.read.parquet(f"{processed_folder_path}/drivers"))

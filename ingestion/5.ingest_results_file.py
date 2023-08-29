@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1. Read the JSON file using the spark dataframe reader
 
@@ -38,7 +46,7 @@ StructField("statusId", IntegerType(), True)
 
 results_df = spark.read \
 .schema(results_schema) \
-.json("/mnt/formula1datacoursedl/raw/results.json")
+.json(f"{raw_folder_path}/results.json")
 display(results_df) 
 
 # COMMAND ----------
@@ -52,10 +60,6 @@ results_dropped_df = results_df.drop("statusId")
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
 results_with_columns_df = results_dropped_df \
     .withColumnRenamed("resultId","result_id")\
     .withColumnRenamed("raceId","race_id")\
@@ -65,11 +69,14 @@ results_with_columns_df = results_dropped_df \
     .withColumnRenamed("positionOrder", "position_order")\
     .withColumnRenamed("fastestLap", "fastest_lap")\
     .withColumnRenamed("fastestLapTime", "fastest_lap_time")\
-    .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed")\
-    .withColumn("ingestion_date",current_timestamp())
-display(results_with_columns_df) 
+    .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed") 
 
 # COMMAND ----------
 
-results_with_columns_df.write.mode("overwrite").partitionBy("race_id").parquet("/mnt/formula1datacoursedl/processed/results")
-display(spark.read.parquet("/mnt/formula1datacoursedl/processed/results"))
+results_with_columns_df = add_ingestion_date(results_dropped_df)
+display(results_with_columns_df)
+
+# COMMAND ----------
+
+results_with_columns_df.write.mode("overwrite").partitionBy("race_id").parquet(f"{processed_folder_path}/results")
+display(spark.read.parquet(f"{processed_folder_path}/results"))

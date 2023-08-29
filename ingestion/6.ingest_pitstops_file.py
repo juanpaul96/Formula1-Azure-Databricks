@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1. Read the JSON file using the spark dataframe reader
 
@@ -28,7 +36,7 @@ StructField("milliseconds", IntegerType(), True)
 pit_stops_df = spark.read \
 .schema(pit_stops_schema) \
 .option("multiline",True) \
-.json("/mnt/formula1datacoursedl/raw/pit_stops.json")
+.json("f"{raw_folder_path}/pit_stops.json")
 display(pit_stops_df) 
 
 # COMMAND ----------
@@ -38,17 +46,17 @@ display(pit_stops_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
+final_pit_stops_df = pit_stops_df \
+    .withColumnRenamed("driverId","driver_id")\
+    .withColumnRenamed("raceId","race_id")
+
 
 # COMMAND ----------
 
-final_pit_stops_df = pit_stops_df \
-    .withColumnRenamed("driverId","driver_id")\
-    .withColumnRenamed("raceId","race_id")\
-    .withColumn("ingestion_date",current_timestamp())
+final_pit_stops_df = add_ingestion_date(pit_stops_df)
 display(final_pit_stops_df) 
 
 # COMMAND ----------
 
-final_pit_stops_df.write.mode("overwrite").parquet("/mnt/formula1datacoursedl/processed/pit_stops")
-display(spark.read.parquet("/mnt/formula1datacoursedl/processed/pit_stops"))
+final_pit_stops_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+display(spark.read.parquet(f"{processed_folder_path}/pit_stops"))
