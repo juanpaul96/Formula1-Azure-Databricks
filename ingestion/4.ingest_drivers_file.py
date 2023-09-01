@@ -29,7 +29,7 @@ StructField("surname", StringType(), True),
 # COMMAND ----------
 
 drivers_schema = StructType(fields=[ 
-StructField("driverid", IntegerType(), False),
+StructField("driverId", IntegerType(), False),
 StructField("driverRef", StringType(), True),
 StructField("number", IntegerType(), True),
 StructField("code", StringType(), True),
@@ -43,7 +43,7 @@ StructField("url", StringType(), True)
 
 drivers_df = spark.read \
 .schema(drivers_schema) \
-.json(f"{raw_folder_path}drivers.json")
+.json(f"{raw_folder_path}/drivers.json")
 display(drivers_df) 
 
 # COMMAND ----------
@@ -69,9 +69,9 @@ display(drivers_with_columns_df)
 
 # COMMAND ----------
 
-drivers_with_columns_df = add_ingestion_date(drivers_dropped_df)
+drivers_final_df = add_ingestion_date(drivers_with_columns_df)
 
 # COMMAND ----------
 
-drivers_with_columns_df.write.mode("overwrite").parquet(f"{processed_folder_path}/drivers")
+drivers_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/drivers")
 display(spark.read.parquet(f"{processed_folder_path}/drivers"))

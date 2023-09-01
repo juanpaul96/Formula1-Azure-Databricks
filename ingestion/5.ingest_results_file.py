@@ -73,10 +73,10 @@ results_with_columns_df = results_dropped_df \
 
 # COMMAND ----------
 
-results_with_columns_df = add_ingestion_date(results_dropped_df)
-display(results_with_columns_df)
+final_results_df = add_ingestion_date(results_with_columns_df)
+display(final_results_df)
 
 # COMMAND ----------
 
-results_with_columns_df.write.mode("overwrite").partitionBy("race_id").parquet(f"{processed_folder_path}/results")
+final_results_df.write.mode("overwrite").partitionBy("race_id").parquet(f"{processed_folder_path}/results")
 display(spark.read.parquet(f"{processed_folder_path}/results"))
