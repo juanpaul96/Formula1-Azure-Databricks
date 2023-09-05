@@ -32,7 +32,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import desc, rank, asc
 
 constructor_rank_spec = Window.partitionBy("race_year").orderBy(desc("total_points"), desc("wins"))
-constructor_standings_df = main_df.withColumn("rank", rank().over(driver_rank_spec))
+constructor_standings_df = main_df.withColumn("rank", rank().over(constructor_rank_spec))
 
 # COMMAND ----------
 
@@ -40,4 +40,8 @@ display(constructor_standings_df)
 
 # COMMAND ----------
 
-constructor_standings_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructor_standings")
+##constructor_standings_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructor_standings")
+
+# COMMAND ----------
+
+constructor_standings_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.constructor_standings")

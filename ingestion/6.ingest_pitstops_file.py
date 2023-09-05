@@ -36,7 +36,7 @@ StructField("milliseconds", IntegerType(), True)
 pit_stops_df = spark.read \
 .schema(pit_stops_schema) \
 .option("multiline",True) \
-.json("f"{raw_folder_path}/pit_stops.json")
+.json(f"{raw_folder_path}/pit_stops.json")
 display(pit_stops_df) 
 
 # COMMAND ----------
@@ -58,5 +58,11 @@ display(final_pit_stops_df)
 
 # COMMAND ----------
 
-final_pit_stops_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
-display(spark.read.parquet(f"{processed_folder_path}/pit_stops"))
+##final_pit_stops_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+##display(spark.read.parquet(f"{processed_folder_path}/pit_stops"))
+
+# COMMAND ----------
+
+##OPTIONAL:
+##Write data in the DB
+final_pit_stops_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.pit_stops")

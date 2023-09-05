@@ -78,5 +78,11 @@ display(final_results_df)
 
 # COMMAND ----------
 
-final_results_df.write.mode("overwrite").partitionBy("race_id").parquet(f"{processed_folder_path}/results")
-display(spark.read.parquet(f"{processed_folder_path}/results"))
+##final_results_df.write.mode("overwrite").partitionBy("race_id").parquet(f"{processed_folder_path}/results")
+##display(spark.read.parquet(f"{processed_folder_path}/results"))
+
+# COMMAND ----------
+
+##OPTIONAL:
+##Write data in the DB
+final_results_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.results")

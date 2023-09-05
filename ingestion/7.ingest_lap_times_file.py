@@ -59,5 +59,11 @@ display(final_lap_times_df)
 
 # COMMAND ----------
 
-final_lap_times_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")
-display(spark.read.parquet(f"{processed_folder_path}/lap_times"))
+##final_lap_times_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")
+##display(spark.read.parquet(f"{processed_folder_path}/lap_times"))
+
+# COMMAND ----------
+
+##OPTIONAL:
+##Write data in the DB
+final_lap_times_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.lap_times")

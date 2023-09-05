@@ -56,4 +56,8 @@ display(race_results_df)
 
 # COMMAND ----------
 
-race_results_df.write.mode("overwrite").parquet(f"{processed_folder_path}/races_results")
+##race_results_df.write.mode("overwrite").parquet(f"{processed_folder_path}/races_results")
+
+# COMMAND ----------
+
+race_results_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.race_results")

@@ -61,5 +61,11 @@ display(final_qualifying_df)
 
 # COMMAND ----------
 
-final_qualifying_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")
-display(spark.read.parquet(f"{processed_folder_path}/qualifying"))
+##final_qualifying_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")
+##display(spark.read.parquet(f"{processed_folder_path}/qualifying"))
+
+# COMMAND ----------
+
+##OPTIONAL:
+##Write data in the DB
+final_qualifying_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.qualifying")

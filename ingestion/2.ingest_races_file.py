@@ -111,9 +111,11 @@ display(races_final_df)
 
 # COMMAND ----------
 
-races_final_df.write.mode("overwrite").partitionBy("race_year").parquet(f"{processed_folder_path}/races")
-display(spark.read.parquet(f"{processed_folder_path}/races"))
+##races_final_df.write.mode("overwrite").partitionBy("race_year").parquet(f"{processed_folder_path}/races")
+##display(spark.read.parquet(f"{processed_folder_path}/races"))
 
 # COMMAND ----------
 
-
+##OPTIONAL:
+##Write data in the DB
+races_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.races")

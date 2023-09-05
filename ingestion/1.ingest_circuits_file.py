@@ -28,7 +28,7 @@ display(dbutils.fs.mounts())
 
 #Header: it's telling to the df that the first row are the headers
 #InferSchema: infers the types of data of the df -Use only in very small data and test env
-circuits_df = spark.read.option("header",True).option("inferSchema",True).csv(f"{raw_folder_path}circuits.csv")
+circuits_df = spark.read.option("header",True).option("inferSchema",True).csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -117,5 +117,16 @@ display(circuits_final_df)
 
 # COMMAND ----------
 
-circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
-display(spark.read.parquet(f'{processed_folder_path}/circuits'))
+##circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+##display(spark.read.parquet(f'{processed_folder_path}/circuits'))
+
+# COMMAND ----------
+
+##OPTIONAL:
+##Write data in the DB
+circuits_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.circuits")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.circuits;

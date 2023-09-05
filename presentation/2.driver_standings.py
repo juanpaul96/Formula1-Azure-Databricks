@@ -40,4 +40,8 @@ display(driver_standings_df)
 
 # COMMAND ----------
 
-driver_standings_df.write.mode("overwrite").parquet(f"{processed_folder_path}/driver_standings")
+##driver_standings_df.write.mode("overwrite").parquet(f"{processed_folder_path}/driver_standings")
+
+# COMMAND ----------
+
+driver_standings_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.driver_standings")

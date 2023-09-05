@@ -47,6 +47,10 @@ constructor_dropped_df = constructors_df.drop("url")
 
 # COMMAND ----------
 
+constructor_final_df = add_ingestion_date(constructor_dropped_df)
+
+# COMMAND ----------
+
 constructor_final_df = constructor_dropped_df \
     .withColumnRenamed("constructorId","constructor_id")\
     .withColumnRenamed("constructorRef", "constructor_ref")
@@ -54,7 +58,7 @@ display(constructor_final_df)
 
 # COMMAND ----------
 
-constructor_final_df = add_ingestion_date(constructor_dropped_df)
+display(constructor_final_df)
 
 # COMMAND ----------
 
@@ -63,5 +67,20 @@ constructor_final_df = add_ingestion_date(constructor_dropped_df)
 
 # COMMAND ----------
 
-constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
-display(spark.read.parquet(f"{processed_folder_path}/constructors"))
+##constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
+##display(spark.read.parquet(f"{processed_folder_path}/constructors"))
+
+# COMMAND ----------
+
+##OPTIONAL:
+##Write data in the DB
+constructor_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.constructors")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.constructors
+
+# COMMAND ----------
+
+
